@@ -157,10 +157,13 @@ def array_sum(context, builder, sig, args):
     zero = sig.return_type(0)
 
     def array_sum_impl(arr):
-        c = zero
+        res, c = zero, zero
         for v in np.nditer(arr):
-            c += v.item()
-        return c
+            y = v.item() - c
+            t = res + y
+            c = (t - res) - y
+            res = t
+        return res
 
     res = context.compile_internal(builder, array_sum_impl, sig, args,
                                     locals=dict(c=sig.return_type))
